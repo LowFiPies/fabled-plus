@@ -1699,6 +1699,8 @@ class ValueCondition extends ProCondition {
 					.setTooltip('The lower bound of the required value'),
 				new AttributeSelect('Max Value', 'max-value', 999)
 					.setTooltip('The upper bound of the required value')
+            			new Toggle('Invert', 'invert', false) // Added Invert toggle option
+                		   	.setTooltip('Invert the condition to check if the value is NOT within the given range')
 			],
 			summaryItems: ['key', 'min-value', 'max-value']
 		});
