@@ -1829,6 +1829,24 @@ const itemOptions = (): ComponentOption[] => {
 	return data;
 };
 
+const warpOptions = (): ComponentOption[] => {
+	return [
+		// General data
+		new BooleanSelect('Preserve Velocity', 'preserve')
+			.setTooltip('Whether to preserve the target\'s velocity post-warp'),
+		new BooleanSelect('Set Yaw', 'setYaw', false)
+			.setTooltip('Whether to set the target\'s yaw on teleport'),
+		new AttributeSelect('Yaw', 'yaw', 0)
+			.requireValue('setYaw', [true])
+			.setTooltip('The Yaw of the desired position (left/right orientation)'),
+		new BooleanSelect('Set Pitch', 'setPitch', false)
+			.setTooltip('Whether to set the target\'s pitch on teleport'),
+		new AttributeSelect('Pitch', 'pitch', 0)
+			.requireValue('setPitch', [true])
+			.setTooltip('The Pitch of the desired position (up/down orientation)')
+	];
+};
+
 /**
  * Adds the options for particle effects to the components
  */
@@ -4129,7 +4147,7 @@ class StatMechanic extends ProMechanic {
 	public constructor() {
 		super({
 			name:         'Stat',
-			description:  'Gives a player bonus stat temporarily',
+			description:  'Gives a player bonus stat temporarily. All available <a href="https://github.com/promcteam/proskillapi/wiki/attributes#attribute-stats">attribute stats</a>',
 			data:         [
 				// new DropdownSelect('Stat', 'key', ['health',
 				//                                              'mana',
@@ -4691,13 +4709,12 @@ class WarpMechanic extends ProMechanic {
 					.setTooltip('How far upward in blocks to teleport. A negative value teleports downward'),
 				new AttributeSelect('Right', 'right')
 					.setTooltip('How far to the right in blocks to teleport. A negative value teleports to the left'),
-				new BooleanSelect('Preserve Velocity', 'preserve')
-					.setTooltip('Whether to preserve the target\'s velocity post-warp')
+				...warpOptions()
 			],
 			preview:      [
 				...particlesAtTargetPreviewOptions()
 			],
-			summaryItems: ['walls', 'forward', 'upward', 'right']
+			summaryItems: ['walls', 'forward', 'upward', 'right', 'preserve']
 		}, false);
 	}
 
@@ -4718,17 +4735,12 @@ class WarpLocMechanic extends ProMechanic {
 					.setTooltip('The Y-coordinate of the desired position'),
 				new DoubleSelect('Z', 'z', 0)
 					.setTooltip('The Z-coordinate of the desired position'),
-				new DoubleSelect('Yaw', 'yaw', 0)
-					.setTooltip('The Yaw of the desired position (left/right orientation)'),
-				new DoubleSelect('Pitch', 'pitch', 0)
-					.setTooltip('The Pitch of the desired position (up/down orientation)'),
-				new BooleanSelect('Preserve Velocity', 'preserve')
-					.setTooltip('Whether to preserve the target\'s velocity post-warp')
+				...warpOptions()
 			],
 			preview:      [
 				...particlesAtTargetPreviewOptions()
 			],
-			summaryItems: ['world', 'x', 'y', 'z']
+			summaryItems: ['world', 'x', 'y', 'z', 'preserve']
 		}, false);
 	}
 
@@ -4747,10 +4759,9 @@ class WarpRandomMechanic extends ProMechanic {
 					.setTooltip('Whether to allow the target to teleport through walls'),
 				new AttributeSelect('Distance', 'distance', 3, 1)
 					.setTooltip('The max distance in blocks to teleport'),
-				new BooleanSelect('Preserve Velocity', 'preserve')
-					.setTooltip('Whether to preserve the target\'s velocity post-warp')
+				...warpOptions()
 			],
-			summaryItems: ['horizontal', 'walls', 'distance']
+			summaryItems: ['horizontal', 'walls', 'distance', 'preserve']
 		}, false);
 	}
 
@@ -4762,10 +4773,8 @@ class WarpSwapMechanic extends ProMechanic {
 		super({
 			name:        'Warp Swap',
 			description: 'Switches the location of the caster and the target. If multiple targets are provided, this takes the first one',
-			data:        [
-				new BooleanSelect('Preserve Velocity', 'preserve')
-					.setTooltip('Whether to preserve the target\'s velocity post-warp')
-			]
+			data:        [...warpOptions()],
+			preview: ['preserve']
 		});
 	}
 
@@ -4780,10 +4789,9 @@ class WarpTargetMechanic extends ProMechanic {
 			data:         [
 				new DropdownSelect('Type', 'type', ['Caster to Target', 'Target to Caster'], 'Caster to Target')
 					.setTooltip('The direction to warp the involved targets'),
-				new BooleanSelect('Preserve Velocity', 'preserve')
-					.setTooltip('Whether to preserve the target\'s velocity post-warp')
+				...warpOptions()
 			],
-			summaryItems: ['type']
+			summaryItems: ['type', 'preserve']
 		});
 	}
 
@@ -4798,13 +4806,12 @@ class WarpValueMechanic extends ProMechanic {
 			data:         [
 				new StringSelect('Key', 'key', 'location')
 					.setTooltip('The unique key the location is stored under. This should be the same key used in the Value Location mechanic'),
-				new BooleanSelect('Preserve Velocity', 'preserve')
-					.setTooltip('Whether to preserve the target\'s velocity post-warp')
+				...warpOptions()
 			],
 			preview:      [
 				...particlesAtTargetPreviewOptions()
 			],
-			summaryItems: ['key']
+			summaryItems: ['key', 'preserve']
 		}, false);
 	}
 
