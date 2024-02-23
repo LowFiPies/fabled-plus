@@ -1693,6 +1693,8 @@ class ValueCondition extends ProCondition {
 			name:         'Value',
 			description:  'Applies child components if a stored value is within the given range',
 			data:         [
+				new BooleanSelect('Invert', 'invert', false)
+					.setTooltip('Invert the condition to check if the value is NOT within the given range.'),
 				new StringSelect('Key', 'key', 'value')
 					.setTooltip('The unique string used for the value set by the Value mechanics'),
 				new AttributeSelect('Min Value', 'min-value', 1)
@@ -1700,7 +1702,7 @@ class ValueCondition extends ProCondition {
 				new AttributeSelect('Max Value', 'max-value', 999)
 					.setTooltip('The upper bound of the required value')
 			],
-			summaryItems: ['key', 'min-value', 'max-value']
+			summaryItems: ['invert', 'key', 'min-value', 'max-value']
 		});
 	}
 
@@ -1713,6 +1715,8 @@ class ValueTextCondition extends ProCondition {
 			name:        'Value Text',
 			description: 'Applies child components if text value match to the settings',
 			data:        [
+				new BooleanSelect('Invert', 'invert', false)
+					.setTooltip('Invert the condition to check if the value does NOT match.'),
 				new DropdownSelect('Mode', 'mode', ['REGEX', 'EXACTLY', 'CONTAIN', 'START', 'END'], 'EXACTLY')
 					.setTooltip('The comparison mode should be conditioned.'),
 				new StringSelect('Key', 'value', '')
