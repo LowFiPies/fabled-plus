@@ -165,9 +165,11 @@ class DropItemTrigger extends ProTrigger {
 			description:  'Applies skill effects upon dropping an item',
 			data:         [
 				new DropdownSelect('Drop multiple', 'drop multiple', ['True', 'False', 'Ignore'], 'Ignore')
-					.setTooltip('Whether the player has to drop multiple items or a single item')
+					.setTooltip('Whether the player has to drop multiple items or a single item'),
+                new BooleanSelect('Cancel Drop', 'cancel', true)
+                    .setTooltip('True cancels the item drop. False allows the item drop')
 			],
-			summaryItems: ['drop multiple']
+			summaryItems: ['drop multiple', 'cancel']
 		});
 	}
 
