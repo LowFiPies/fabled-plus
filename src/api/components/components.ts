@@ -4421,7 +4421,7 @@ class ValueCopyMechanic extends ProMechanic {
 				new StringSelect('Destination', 'destination', 'value')
 					.setTooltip('The key to copy the original value to'),
 				new BooleanSelect('To target', 'to-target', true)
-					.setTooltip('The amount to add to the value'),
+					.setTooltip('Whether to copy the value to the target or from the target to the caster'),
 				new BooleanSelect('Save', 'save', false)
 					.setTooltip('If true, save the key value to persistent value. Persistent value is not lost when the player leaves the server and is stored separately on each account')
 
@@ -4446,6 +4446,27 @@ class ValueDistanceMechanic extends ProMechanic {
 
 			],
 			summaryItems: ['key', 'save']
+		}, false);
+	}
+
+	public static override new = () => new this();
+}
+
+class ValueDivideMechanic extends ProMechanic {
+	public constructor() {
+		super({
+			name:         'Value Divide',
+			description:  'Divides a stored value under a unique key for the caster. If the value wasn\'t set before, this will not do anything',
+			data:         [
+				new StringSelect('Key', 'key', 'value')
+					.setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value'),
+				new AttributeSelect('Divisor', 'divisor', 1)
+					.setTooltip('The amount to divide the value by'),
+				new BooleanSelect('Save', 'save', false)
+					.setTooltip('If true, save the key value to persistent value. Persistent value is not lost when the player leaves the server and is stored separately on each account')
+
+			],
+			summaryItems: ['key', 'divisor', 'save']
 		}, false);
 	}
 
@@ -5099,6 +5120,7 @@ export const initComponents = () => {
 		VALUE_ATTRIBUTE:   { name: 'Value Attribute', component: ValueAttributeMechanic, section: 'Value' },
 		VALUE_COPY:        { name: 'Value Copy', component: ValueCopyMechanic, section: 'Value' },
 		VALUE_DISTANCE:    { name: 'Value Distance', component: ValueDistanceMechanic, section: 'Value' },
+		VALUE_DIVIDE:      { name: 'Value Divide', component: ValueDivideMechanic, section: 'Value' },
 		VALUE_HEALTH:      { name: 'Value Health', component: ValueHealthMechanic, section: 'Value' },
 		VALUE_LOAD:        { name: 'Value Load', component: ValueLoadMechanic, section: 'Value' },
 		VALUE_LOCATION:    { name: 'Value Location', component: ValueLocationMechanic, section: 'Value' },
