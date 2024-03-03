@@ -7,6 +7,7 @@ import ProTarget                                                 from '$api/comp
 import MaterialSelect                                            from '$api/options/materialselect';
 import {
 	getAnyConsumable,
+	getAnyDamageTypes,
 	getAnyEntities,
 	getAnyMaterials,
 	getAnyPotion,
@@ -41,6 +42,7 @@ import IntSelect                                                 from '$api/opti
 import ColorSelect                                               from '$api/options/colorselect';
 import { get }                                                   from 'svelte/store';
 import type ProComponent                                         from '$api/components/procomponent';
+import { attributes }                                            from '../../data/attribute-store';
 
 // TRIGGERS
 
@@ -52,6 +54,21 @@ class ArmorEquipTrigger extends ProTrigger {
 			data:         [new DropdownSelect('Slots', 'slots', ['Any', 'Helmet', 'Chestplate', 'Leggings', 'Boots', 'Main hand', 'Offhand'], ['Any'], true)
 				.setTooltip('The armor slots to check for')],
 			summaryItems: ['slots']
+		});
+	}
+
+	public static override new = () => new this();
+}
+
+class AttributeChangeTrigger extends ProTrigger {
+	public constructor() {
+		super({
+			name:         'Attribute Change',
+			description:  'Applies skill effects when a player\'s attribute changes. <code>api-attribute</code> is the attribute name, '
+											+ '<code>api-change</code> is the change, and <code>api-value</code> is the new value',
+			data:         [new DropdownSelect('Attribute', 'attr', ['Any', ...get(attributes)], ['Any'], true)
+				.setTooltip('The attribute to check for')],
+			summaryItems: ['attr']
 		});
 	}
 
@@ -202,7 +219,7 @@ class EnvironmentDamageTrigger extends ProTrigger {
 			name:         'Environment Damage',
 			description:  'Applies skill effects when a player takes environmental damage',
 			data:         [
-				new DropdownSelect('Type', 'type', getDamageTypes, 'Fall')
+				new DropdownSelect('Type', 'type', getAnyDamageTypes, ['Fall'], true)
 					.setTooltip('The source of damage to apply for')
 			],
 			summaryItems: ['type']
@@ -3077,15 +3094,17 @@ class LaunchMechanic extends ProMechanic {
 			description:  'Launches the target relative to their forward direction. Use negative values to go in the opposite direction (e.g. negative forward makes the target go backwards)',
 			data:         [
 				new DropdownSelect('Relative', 'relative', ['Target', 'Caster', 'Between'], 'Target')
-					.setTooltip('Determines what is considered "forward". Target uses the direction the target is facing, Caster uses the direction the caster is facing, and Between uses the direction from the caster to the target'),
+					.setTooltip('Determines what is considered "forward". Target uses the direction the target is facing, Caster uses the direction the caster is facing, and Between uses the direction from the target to the caster'),
+				new BooleanSelect('Reset Y', 'reset-y')
+					.setTooltip('Whether to reset the Y value. False means the upward velocity is a combination of the setting and the relative vector.'),
 				new AttributeSelect('Forward Speed', 'forward')
-					.setTooltip('The speed to give the target in the direction they are facing'),
+					.setTooltip('The speed to give the target in the direction they are facing/looking'),
 				new AttributeSelect('Upward Speed', 'upward', 2, 0.5)
-					.setTooltip('The speed to give the target upwards'),
+					.setTooltip('The speed to give the target upwards, this is added to the calculated vector if \'Use Look\' is true'),
 				new AttributeSelect('Right Speed', 'right')
 					.setTooltip('The speed to give the target to their right')
 			],
-			summaryItems: ['relative', 'forward', 'upward', 'right']
+			summaryItems: ['relative', 'reset-y', 'forward', 'upward', 'right']
 		}, false);
 	}
 
@@ -4317,7 +4336,7 @@ class TriggerMechanic extends ProMechanic {
 					.setTooltip('Whether the player has to drop multiple items or a single item'),
 
 				// ENVIRONMENT_DAMAGE
-				new DropdownSelect('Type', 'type', getDamageTypes, 'FALL')
+				new DropdownSelect('Type', 'type', getAnyDamageTypes, ['Fall'], true)
 					.requireValue('trigger', ['Environment Damage'])
 					.setTooltip('The source of damage to apply for'),
 
@@ -4332,7 +4351,7 @@ class TriggerMechanic extends ProMechanic {
 					.setTooltip('The minimum distance the player should fall before effects activating'),
 
 				// LAUNCH
-				new DropdownSelect('Type', 'type', getAnyProjectiles(), 'Any')
+				new DropdownSelect('Type', 'type', getAnyProjectiles, 'Any')
 					.requireValue('trigger', ['Launch'])
 					.setTooltip('The type of projectile that should be launched'),
 
@@ -4946,6 +4965,7 @@ const particlePreviewOptions = (key: string): ComponentOption[] => {
 
 export const initComponents = () => {
 	triggers.set({
+		ATTR_CHANGE:   { name: 'Attribute Change', component: AttributeChangeTrigger },
 		BLOCK_BREAK:   { name: 'Block Break', component: BlockBreakTrigger },
 		BLOCK_PLACE:   { name: 'Block Place', component: BlockPlaceTrigger },
 		CAST:          { name: 'Cast', component: CastTrigger },
