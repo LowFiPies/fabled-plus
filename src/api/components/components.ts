@@ -322,6 +322,17 @@ class ItemSwapTrigger extends ProTrigger {
 	public static override new = () => new this();
 }
 
+class JumpTrigger extends ProTrigger {
+	public constructor() {
+		super({
+			name:         'Jump',
+			description:  'Applies skill effects when a player jumps'
+		});
+	}
+
+	public static override new = () => new this();
+}
+
 class KillTrigger extends ProTrigger {
 	public constructor() {
 		super({
@@ -4976,6 +4987,7 @@ export const initComponents = () => {
 		ENTITY_TARGET: { name: 'Entity Target', component: EntityTargetTrigger },
 		HEAL:          { name: 'Heal', component: HealTrigger },
 		INIT:          { name: 'Initialize', component: InitializeTrigger },
+		JUMP:          { name: 'Jump', component: JumpTrigger },
 		KILL:          { name: 'Kill', component: KillTrigger },
 		LAND:          { name: 'Land', component: LandTrigger },
 		LEFT_CLICK:    { name: 'Left Click', component: LeftClickTrigger },
