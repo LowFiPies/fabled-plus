@@ -1,13 +1,20 @@
-import type { LayoutLoad }       from './$types';
-import { createPaste, getHaste } from '$api/hastebin';
-import { base }                  from '$app/paths';
+import type { LayoutLoad }                  from './$types';
+import { createPaste, getHaste }            from '$api/hastebin';
+import { base }                             from '$app/paths';
+import { loadSkillText, skills }            from '../data/skill-store';
+import { getAllClassYaml, getAllSkillYaml } from '../data/store';
+import { get }                              from 'svelte/store';
+import { loadClassText }                    from '../data/class-store';
+import YAML                                 from 'yaml';
+import { initComponents }                   from '$api/components/components';
 
 export const ssr = false;
 
-const expectedHost = 'promcteam.github.io';
+const expectedHost = 'fabled.magemonkey.studio';
 const separator    = '\n\n\n~~~~~\n\n\n';
 
-export const load: LayoutLoad = ({ url }) => {
+export const load: LayoutLoad = async ({ url }) => {
+	initComponents();
 	if (url.host.includes('localhost')) return;
 
 	if (url.searchParams.has('migrationData')) {
@@ -21,24 +28,25 @@ export const load: LayoutLoad = ({ url }) => {
 				const skillFolders = data.split(separator)[2];
 				const classFolders = data.split(separator)[3];
 
-				localStorage.setItem('skillData', skillData);
-				localStorage.setItem('classData', classData);
+				loadSkillText(skillData).then(() => {
+				});
+				loadClassText(classData);
 				localStorage.setItem('skillFolders', skillFolders);
 				localStorage.setItem('classFolders', classFolders);
 
-				window.location.href = `http://${expectedHost}${base}`;
+				window.location.href = `https://${expectedHost}${base}`;
 			})
 			.catch(console.error);
 
 		return;
 	}
 
-	if (url.host === expectedHost || !localStorage.getItem('skillData')) return;
+	if (url.host === expectedHost || get(skills).length == 0) return;
 
-	alert('We\'re migrating the new editor to the old URL. You\'re now going to be redirected. Your skills/classes should remain in tact.');
+	alert('We\'re migrating to a new URL. You\'re now going to be redirected. Your skills/classes should remain in tact.');
 
-	const skillYaml    = localStorage.getItem('skillData');
-	const classYaml    = localStorage.getItem('classData');
+	const skillYaml    = YAML.stringify(await getAllSkillYaml(), { lineWidth: 0 });
+	const classYaml    = YAML.stringify(getAllClassYaml(), { lineWidth: 0 });
 	const skillFolders = localStorage.getItem('skillFolders');
 	const classFolders = localStorage.getItem('classFolders');
 
@@ -48,7 +56,5 @@ export const load: LayoutLoad = ({ url }) => {
 		+ classFolders;
 
 	createPaste(qualifiedData)
-		.then((url: string) => window.location.href = `http://${expectedHost}/proskillapi?migrationData=${url}`);
-
-	return;
+		.then((url: string) => window.location.href = `https://${expectedHost}?migrationData=${url}`);
 };
