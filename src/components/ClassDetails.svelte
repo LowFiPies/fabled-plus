@@ -1,43 +1,43 @@
 <script lang='ts'>
-	import type FabledClass from '$api/fabled-class';
-	import IconInput        from './input/IconInput.svelte';
-	import MaterialSelect         from './input/MaterialSelect.svelte';
-	import SearchableSelect       from './input/SearchableSelect.svelte';
-	import { updateSidebar }      from '../data/store';
-	import AttributeInput         from './input/AttributeInput.svelte';
-	import ByteSelect             from './input/ByteSelect.svelte';
-	import { expSources }         from '../version/data';
-	import { toProperCase }       from '$api/api';
-	import { onDestroy, onMount } from 'svelte';
-	import { FabledAttribute }    from '$api/fabled-attribute';
-	import ProInput               from './input/ProInput.svelte';
-	import { classes }            from '../data/class-store';
-	import { attributes }         from '../data/attribute-store';
-	import Toggle                 from './input/Toggle.svelte';
-	import { skills }             from '../data/skill-store';
-	import LoreInput              from '$input/LoreInput.svelte';
-	import type { Unsubscriber }  from 'svelte/store';
+	import IconInput                   from './input/IconInput.svelte';
+	import MaterialSelect              from './input/MaterialSelect.svelte';
+	import SearchableSelect            from './input/SearchableSelect.svelte';
+	import { updateSidebar }           from '../data/store';
+	import AttributeInput              from './input/AttributeInput.svelte';
+	import ByteSelect                  from './input/ByteSelect.svelte';
+	import { expSources }              from '../version/data';
+	import { toProperCase }            from '$api/api';
+	import { onDestroy, onMount }      from 'svelte';
+	import { Attribute }               from '$api/stat';
+	import ProInput                    from './input/ProInput.svelte';
+	import Toggle                      from './input/Toggle.svelte';
+	import LoreInput                   from '$input/LoreInput.svelte';
+	import type { Unsubscriber }       from 'svelte/store';
+	import FabledClass, { classStore } from '../data/class-store';
+	import { skillStore }              from '../data/skill-store';
+	import { attributeStore }          from '../data/attribute-store.js';
 
 	export let data: FabledClass;
 
 	let combosShown = false;
 	let sub: Unsubscriber;
 
+	const classes = classStore.classes;
+	const skills  = skillStore.skills;
+
 	onMount(() => {
-		sub = attributes.subscribe(attr => {
+		sub = attributeStore.attributes.subscribe(value => {
 			const included: string[] = [];
 			data.attributes          = data.attributes.filter(a => {
-				if (attr?.includes(a.name)) {
+				if (value.some((attr) => attr.name === a.name)) {
 					included.push(a.name);
 					return true;
 				}
 				return false;
 			});
 
-			attr = attr.filter(a => !included.includes(a));
-
-			for (const attrib of attr) {
-				data.attributes.push(new FabledAttribute(attrib, 0, 0));
+			for (const attrib of value.filter(attr => !included.includes(attr.name))) {
+				data.attributes.push(new Attribute(attrib.name, 0, 0));
 			}
 		});
 	});
@@ -68,7 +68,7 @@
 	<ProInput label='Mana Name'
 						tooltip='The name the class uses for mana'
 						bind:value={data.manaName} />
-	<ProInput label='Max Level' type='number' intMode={true}
+	<ProInput label='Max Level'
 						tooltip='The maximum level the class can reach. If this class turns into other classes, this will also be the level it can profess into those classes'
 						bind:value={data.maxLevel} />
 	<ProInput label='Parent'
@@ -104,7 +104,7 @@
 		</ProInput>
 	{/each}
 
-	<ProInput label='Mana Regen' type='number'
+	<ProInput label='Mana Regen'
 						tooltip='The amount of mana the class regenerates at each interval. The interval is in the config.yml and by default is once every second. If you want to regen a decimal amount per second, increase the interval'
 						bind:value={data.manaRegen} />
 	<ProInput label='Skill Tree'
@@ -136,7 +136,10 @@
 		<MaterialSelect multiple bind:selected={data.unusableItems} />
 	</ProInput>
 
-	<div class='header combos' on:click={() => combosShown = !combosShown}
+	<div class='header combos'
+			 role='button'
+			 tabindex='0'
+			 on:click={() => combosShown = !combosShown}
 			 on:keypress={e => {
 			 	if (e.key === 'Enter') combosShown = !combosShown;
 			 }}>

@@ -1,29 +1,21 @@
 <script lang='ts'>
-	import {
-		active,
-		deleteProData,
-		dragging,
-		getFolder,
-		isShowClasses,
-		saveData,
-		sidebarOpen,
-		updateFolders
-	}                  from '../../data/store';
-	import FabledSkill from '$api/fabled-skill';
-	import FabledClass from '$api/fabled-class';
-	import { get }     from 'svelte/store';
-	import FabledFolder                   from '$api/fabled-folder';
-	import { fly, type TransitionConfig } from 'svelte/transition';
-	import Modal                          from '../Modal.svelte';
-	import { addClassFolder, cloneClass } from '../../data/class-store';
-	import { addSkillFolder, cloneSkill } from '../../data/skill-store';
-	import { animationEnabled }           from '../../data/settings';
-	import { base }                       from '$app/paths';
-	import { createEventDispatcher }      from 'svelte';
+	import { active, deleteProData, dragging, saveData, shownTab, sidebarOpen } from '../../data/store';
+	import FabledAttribute                                                      from '$api/fabled-attribute';
+	import { get }                                                              from 'svelte/store';
+	import { fly, type TransitionConfig }                                       from 'svelte/transition';
+	import Modal                                                                from '../Modal.svelte';
+	import { animationEnabled }                                                 from '../../data/settings';
+	import { base }                                                             from '$app/paths';
+	import { createEventDispatcher }                                            from 'svelte';
+	import { Tab }                                                              from '$api/tab';
+	import FabledSkill, { skillStore }                                          from '../../data/skill-store';
+	import FabledClass, { classStore }                                          from '../../data/class-store';
+	import { FabledFolder, folderStore }                                        from '../../data/folder-store.js';
+	import { attributeStore }                                                   from '../../data/attribute-store';
 
-	export let delay                       = 0;
-	export let direction: 'right' | 'left' = 'left';
-	export let data: FabledSkill | FabledClass;
+	export let delay                                                         = 0;
+	export let direction: 'right' | 'left'                                   = 'left';
+	export let data: FabledSkill | FabledClass | FabledAttribute | undefined = undefined;
 
 	let over     = false;
 	let deleting = false;
@@ -39,23 +31,31 @@
 	};
 
 	const drop = () => {
-		const dragData: FabledClass | FabledSkill | FabledFolder = get(dragging);
+		const dragData: FabledClass | FabledSkill | FabledAttribute | FabledFolder = get(dragging);
 		let targetFolder;
 		if (data) {
-			targetFolder = getFolder(data);
+			targetFolder = folderStore.getFolder(data);
 		}
 
-		const containing = getFolder(dragData);
+		const containing = folderStore.getFolder(dragData);
 		if (containing) containing.remove(dragData);
 		if (targetFolder) {
 			targetFolder.add(dragData);
 			over = false;
-			updateFolders();
+			folderStore.updateFolders();
 			return;
 		}
 		if (dragData instanceof FabledFolder) {
-			if (get(isShowClasses)) addClassFolder(dragData);
-			else addSkillFolder(dragData);
+			switch (get(shownTab)) {
+				case Tab.CLASSES: {
+					classStore.addClassFolder(dragData);
+					break;
+				}
+				case Tab.SKILLS: {
+					skillStore.addSkillFolder(dragData);
+					break;
+				}
+			}
 			dragData.parent = undefined;
 		}
 
@@ -78,13 +78,15 @@
 		return options.fn(node, options);
 	};
 
-	const cloneData = (data?: FabledClass | FabledSkill) => {
+	const cloneData = (data?: FabledClass | FabledSkill | FabledAttribute) => {
 		if (!data) return;
 
 		if (data instanceof FabledClass) {
-			cloneClass(data);
-		} else {
-			cloneSkill(data);
+			classStore.cloneClass(data);
+		} else if (data instanceof FabledSkill) {
+			skillStore.cloneSkill(data);
+		} else if (data instanceof FabledAttribute) {
+			attributeStore.cloneAttribute(data);
 		}
 	};
 </script>
@@ -93,7 +95,7 @@
 <div class='sidebar-entry'
 		 class:over
 		 class:active={data && $active === data}
-		 class:in-folder={!!getFolder(data)}
+		 class:in-folder={!!folderStore.getFolder(data)}
 		 draggable='{!!data}'
 		 on:dragstart={startDrag}
 		 on:drop|preventDefault|stopPropagation={drop}
@@ -120,11 +122,11 @@
 				</a>
 			{/if}
 			<div on:click|preventDefault|stopPropagation={() => saveData(data)}
-					 on:keypress|preventDefault|stopPropagation={(event) => { if (event?.key === 'Enter') saveData(data); }}
+					 on:keypress|preventDefault|stopPropagation={(event) => {if (event?.key === 'Enter') saveData(data);}}
 					 tabindex='0'
 					 role='button'
 					 class='download'
-					 title="Save {data.dataType === 'skill' ? 'Skill' : 'Class'}">
+					 title='Save {data.dataType.substring(0, 1).toUpperCase()+data.dataType.substring(1)}'>
         <span class='material-symbols-rounded'>
           save
         </span>
@@ -134,7 +136,7 @@
 					 tabindex='0'
 					 role='button'
 					 class='clone'
-					 title="Clone {data.dataType === 'skill' ? 'Skill' : 'Class'}">
+					 title='Clone {data.dataType.substring(0, 1).toUpperCase()+data.dataType.substring(1)}'>
         <span class='material-symbols-rounded'>
           content_copy
         </span>
@@ -160,7 +162,7 @@
 					 tabindex='0'
 					 role='button'
 					 class='delete'
-					 title="Delete {data.dataType === 'skill' ? 'Skill' : 'Class'}">
+					 title='Delete {data.dataType.substring(0, 1).toUpperCase()+data.dataType.substring(1)}'>
         <span class='material-symbols-rounded'>
           delete
         </span>

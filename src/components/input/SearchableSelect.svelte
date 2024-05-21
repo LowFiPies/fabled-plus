@@ -54,9 +54,9 @@
 		}
 
 		if (!multiple) {
-			const cancelled = dispatch('select', item, { cancelable: true });
+			const notCancelled = dispatch('select', item, { cancelable: true });
 
-			if (!cancelled) {
+			if (notCancelled) {
 				selected = item;
 				criteria = '';
 			}
@@ -66,8 +66,8 @@
 
 		if (!selected || (selected instanceof Array && selected.includes(item))) return;
 
-		const cancelled = dispatch('select', [...<Array<unknown>>selected, item], { cancelable: true });
-		if (cancelled) return;
+		const notCancelled = dispatch('select', [...<Array<unknown>>selected, item], { cancelable: true });
+		if (!notCancelled) return;
 
 		selected = [...<Array<unknown>>selected, item];
 		criteria = '';
@@ -77,8 +77,8 @@
 	const remove = (e: MouseEvent | KeyboardEvent, item: unknown) => {
 		e.stopPropagation();
 
-		const cancelled = dispatch('remove', item, { cancelable: true });
-		if (cancelled) return;
+		const notCancelled = dispatch('remove', item, { cancelable: true });
+		if (!notCancelled) return;
 
 		if (multiple) selected = (<Array<unknown>>selected).filter((s: unknown) => s != item);
 		else selected = undefined;

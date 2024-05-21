@@ -1,9 +1,10 @@
-import FabledSkill from './fabled-skill';
-import FabledClass         from './fabled-class';
-import { FabledAttribute } from './fabled-attribute';
-import ProTrigger          from './components/triggers';
-import ProComponent     from '$api/components/procomponent';
-import ComponentOption  from './options/options';
+import { Attribute }                              from './stat';
+import ProTrigger                                 from './components/triggers';
+import ProComponent                               from '$api/components/procomponent';
+import ComponentOption                            from './options/options';
+import type { AttributeComponent, AttributeStat } from './fabled-attribute';
+import type FabledClass                           from '../data/class-store';
+import type FabledSkill                           from '../data/skill-store';
 
 export interface ProClassData {
 	name: string;
@@ -15,10 +16,10 @@ export interface ProClassData {
 	parent?: FabledClass;
 	permission?: boolean;
 	expSources?: number;
-	health?: FabledAttribute;
-	mana?: FabledAttribute;
+	health?: Attribute;
+	mana?: Attribute;
 	manaRegen?: number;
-	attributes?: FabledAttribute[];
+	attributes?: Attribute[];
 	skillTree?: 'Custom' | 'Requirement' | 'Basic Horizontal' | 'Basic Vertical' | 'Level Horizontal' | 'Level Vertical' | 'Flood';
 	skills?: FabledSkill[];
 	icon?: Icon;
@@ -47,14 +48,14 @@ export interface ProSkillData {
 	maxLevel?: number;
 	skillReq?: FabledSkill;
 	skillReqLevel?: number;
-	attributeRequirements?: FabledAttribute[];
+	attributeRequirements?: Attribute[];
 	permission?: boolean;
-	levelReq?: FabledAttribute;
-	cost?: FabledAttribute;
-	cooldown?: FabledAttribute;
+	levelReq?: Attribute;
+	cost?: Attribute;
+	cooldown?: Attribute;
 	cooldownMessage?: boolean;
-	mana?: FabledAttribute;
-	minSpent?: FabledAttribute;
+	mana?: Attribute;
+	minSpent?: Attribute;
 	castMessage?: string;
 	combo?: string;
 	indicator?: '2D' | '3D' | 'None';
@@ -62,6 +63,19 @@ export interface ProSkillData {
 	incompatible?: FabledSkill[];
 
 	triggers?: ProTrigger[];
+}
+
+export interface ProAttributeData {
+	name: string;
+	location?: 'local' | 'server';
+	display?: string;
+	max?: number;
+	cost?: Attribute;
+	icon?: Icon;
+	targets?: AttributeComponent[];
+	conditions?: AttributeComponent[];
+	mechanics?: AttributeComponent[];
+	stats?: AttributeStat[];
 }
 
 export interface Icon {
@@ -104,7 +118,7 @@ export interface VersionData {
 }
 
 export abstract class Serializable {
-	public abstract serializeYaml: () => SkillYamlData | ClassYamlData;
+	public abstract serializeYaml: () => SkillYamlData | ClassYamlData | AttributeYamlData;
 }
 
 export interface StarterInfo {
@@ -142,7 +156,7 @@ export interface ClassYamlData {
 	'icon-lore': string[];
 	'exp-source': number;
 
-	'combo-starters': ComboStarters
+	'combo-starters': ComboStarters;
 }
 
 export interface SkillYamlData {
@@ -174,6 +188,24 @@ export interface SkillYamlData {
 	};
 
 	components: YamlComponentData;
+}
+
+export interface AttributeYamlData {
+	display: string;
+	max: number;
+	cost_base: number;
+	cost_modifier: number;
+	icon: string;
+	'icon-data': number;
+	'icon-lore': string[];
+	global: {
+		target: { [key: string]: string }
+		condition: { [key: string]: string }
+		mechanic: { [key: string]: string }
+	};
+	stats: {
+		[key: string]: string
+	};
 }
 
 export interface YamlComponentData {
@@ -211,4 +243,8 @@ export interface MultiSkillYamlData {
 	loaded?: boolean;
 
 	[key: string]: SkillYamlData;
+}
+
+export interface MultiAttributeYamlData {
+	[key: string]: AttributeYamlData;
 }
