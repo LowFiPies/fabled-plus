@@ -67,7 +67,7 @@ class AttributeChangeTrigger extends ProTrigger {
 			name:         'Attribute Change',
 			description:  'Applies skill effects when a player\'s attribute changes. <code>api-attribute</code> is the attribute name, '
 											+ '<code>api-change</code> is the change, and <code>api-value</code> is the new value',
-			data:         [new DropdownSelect('Attribute', 'attr', () => ['Any', ...getAttributeNames()], ['Any'], true)
+			data:         [new DropdownSelect('Attribute', 'attr', () => ['Any', ...attributeStore.getAttributeNames()], ['Any'], true)
 				.setTooltip('The attribute to check for')],
 			summaryItems: ['attr']
 		});
@@ -750,6 +750,8 @@ class ConeTarget extends ProTarget {
 					.setTooltip('The max distance away any target can be in blocks'),
 				new AttributeSelect('Angle', 'angle', 90)
 					.setTooltip('The angle of the cone arc in degrees'),
+				new AttributeSelect('Rotation', 'rotation', 0)
+					.setTooltip('The rotation of the cone in degrees'),
 				new BooleanSelect('Reset Y', 'reset-y', true)
 					.setTooltip('Whether to remove the Y component of the caster/target when determining targets'),
 				...targetOptions()
@@ -1940,7 +1942,7 @@ const warpOptions = (): ComponentOption[] => {
 const particleOptions = (): ComponentOption[] => {
 	return [
 		new SectionMarker('Particle Options'),
-		new DropdownSelect('Particle', 'particle', getParticles, 'Villager happy')
+		new DropdownSelect('Particle', 'particle', getParticles, getParticles()[0])
 			.setTooltip('The type of particle to display'),
 
 		new DropdownSelect('Material', 'material', (() => [...getMaterials()]), 'Arrow')
@@ -1960,13 +1962,13 @@ const particleOptions = (): ComponentOption[] => {
 			.requireValue('particle', ['Item crack'])
 			.setTooltip('The CustomModelData of the item used to make the particles'),
 		new ColorSelect('Dust Color', 'dust-color', '#FF0000')
-			.requireValue('particle', ['Redstone', 'Dust color transition'])
+			.requireValue('particle', ['Redstone', 'Dust', 'Dust color transition'])
 			.setTooltip('The color of the dust particles in hex RGB'),
 		new ColorSelect('Final Dust Color', 'final-dust-color', '#FF0000')
 			.requireValue('particle', ['Dust color transition'])
 			.setTooltip('The color to transition to, in hex RGB'),
 		new DoubleSelect('Dust Size', 'dust-size', 1)
-			.requireValue('particle', ['Redstone', 'Dust color transition'])
+			.requireValue('particle', ['Redstone', 'Dust', 'Dust color transition'])
 			.setTooltip('The size of the dust particles'),
 
 		new DropdownSelect('Arrangement', 'arrangement', ['Sphere', 'Circle', 'Hemisphere'], 'Sphere')
@@ -2111,7 +2113,7 @@ const effectOptions = (optional: boolean): ComponentOption[] => {
 		opt(new IntSelect('View Range', '-view-range', 25)
 			.setTooltip('How far away the effect can be seen from.')),
 
-		opt(new DropdownSelect('Particle', '-particle-type', getParticles, 'Villager happy')
+		opt(new DropdownSelect('Particle', '-particle-type', getParticles, getParticles()[0])
 			.setTooltip('The type of particle to use.')),
 		opt(new DropdownSelect('Material', '-particle-material', getMaterials, 'Dirt')
 			.requireValue('-particle-type', ['Item crack'])
@@ -2125,11 +2127,11 @@ const effectOptions = (optional: boolean): ComponentOption[] => {
 		opt(new IntSelect('CustomModelData', '-particle-data')
 			.requireValue('-particle-type', ['Item crack'])
 			.setTooltip('The data value for the material used by the particle. For 1.14+ determines the CustomModelData of the item.')),
-		new ColorSelect('Dust Color', '-particle-dust-color', '#FF0000').requireValue('-particle-type', ['Redstone', 'Dust color transition'])
+		new ColorSelect('Dust Color', '-particle-dust-color', '#FF0000').requireValue('-particle-type', ['Redstone', 'Dust', 'Dust color transition'])
 			.setTooltip('The color of the dust particles in hex RGB'),
 		new ColorSelect('Final Dust Color', '-particle-final-dust-color', '#FF0000').requireValue('-particle-type', ['Dust color transition'])
 			.setTooltip('The color to transition to, in hex RGB'),
-		new DoubleSelect('Dust Size', '-particle-dust-size', 1).requireValue('-particle-type', ['Redstone', 'Dust color transition'])
+		new DoubleSelect('Dust Size', '-particle-dust-size', 1).requireValue('-particle-type', ['Redstone', 'Dust', 'Dust color transition'])
 			.setTooltip('The size of the dust particles'),
 		opt(new IntSelect('Amount', '-particle-amount', 1)
 			.setTooltip('Number of particles to play per point. For "Spell mob" and "Spell mob ambient" particles, set to 0 to control the particle color.')),
@@ -3002,7 +3004,7 @@ class ItemProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'per-target-final-dust-color', '#FF0000')
@@ -3010,7 +3012,7 @@ class ItemProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'per-target-dust-size', 1)
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -3088,7 +3090,7 @@ class ItemProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'path-final-dust-color', '#FF0000')
@@ -3096,7 +3098,7 @@ class ItemProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'path-dust-size', 1)
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -3523,7 +3525,7 @@ class ParticleProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'per-target-final-dust-color', '#FF0000')
@@ -3531,7 +3533,7 @@ class ParticleProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'per-target-dust-size', 1)
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -3609,7 +3611,7 @@ class ParticleProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'path-final-dust-color', '#FF0000')
@@ -3617,7 +3619,7 @@ class ParticleProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'path-dust-size', 1)
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -3770,13 +3772,13 @@ class PotionProjectileMechanic extends ProMechanic {
 					.requireValue('cloud-particle', ['Item crack'])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'cloud-dust-color', '#FF0000')
-					.requireValue('cloud-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('cloud-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'cloud-final-dust-color', '#FF0000')
 					.requireValue('cloud-particle', ['Dust color transition'])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'cloud-dust-size', 1)
-					.requireValue('cloud-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('cloud-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.setTooltip('The size of the dust particles'),
 
 				...homingOptions(),
@@ -3815,7 +3817,7 @@ class PotionProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'per-target-final-dust-color', '#FF0000')
@@ -3823,7 +3825,7 @@ class PotionProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'per-target-dust-size', 1)
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -3901,7 +3903,7 @@ class PotionProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'path-final-dust-color', '#FF0000')
@@ -3909,7 +3911,7 @@ class PotionProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'path-dust-size', 1)
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -4018,7 +4020,7 @@ class ProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'per-target-final-dust-color', '#FF0000')
@@ -4026,7 +4028,7 @@ class ProjectileMechanic extends ProMechanic {
 					.requireValue('per-target', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'per-target-dust-size', 1)
-					.requireValue('per-target-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('per-target-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('per-target', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -4104,7 +4106,7 @@ class ProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The color of the dust particles in hex RGB'),
 				new ColorSelect('Final Dust Color', 'path-final-dust-color', '#FF0000')
@@ -4112,7 +4114,7 @@ class ProjectileMechanic extends ProMechanic {
 					.requireValue('path', [true])
 					.setTooltip('The color to transition to, in hex RGB'),
 				new DoubleSelect('Dust Size', 'path-dust-size', 1)
-					.requireValue('path-particle', ['Redstone', 'Dust color transition'])
+					.requireValue('path-particle', ['Redstone', 'Dust', 'Dust color transition'])
 					.requireValue('path', [true])
 					.setTooltip('The size of the dust particles'),
 
@@ -4541,7 +4543,7 @@ class ValueAttributeMechanic extends ProMechanic {
 			data:         [
 				new StringSelect('Key', 'key', 'attribute')
 					.setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value'),
-				new DropdownSelect('Attribute', 'attribute', () => getAttributeNames(), ['Vitality'], true)
+				new DropdownSelect('Attribute', 'attribute', attributeStore.getAttributeNames, 'Vitality', false)
 					.setTooltip('The attribute you are loading the value of'),
 				new BooleanSelect('Save', 'save', false)
 					.setTooltip('If true, save the key value to persistent value. Persistent value is not lost when the player leaves the server and is stored separately on each account')
@@ -5066,7 +5068,7 @@ const particlePreviewOptions = (key: string): ComponentOption[] => {
 			.requireValue(key, [true])
 			.setTooltip('The CustomModelData of the item used to make the particles'),
 		new ColorSelect('Dust Color', key + '-dust-color', '#FF0000')
-			.requireValue(key + '-particle', ['Redstone', 'Dust color transition'])
+			.requireValue(key + '-particle', ['Redstone', 'Dust', 'Dust color transition'])
 			.requireValue(key, [true])
 			.setTooltip('The color of the dust particles in hex RGB'),
 		new ColorSelect('Final Dust Color', key + '-final-dust-color', '#FF0000')
@@ -5074,7 +5076,7 @@ const particlePreviewOptions = (key: string): ComponentOption[] => {
 			.requireValue(key, [true])
 			.setTooltip('The color to transition to, in hex RGB'),
 		new DoubleSelect('Dust Size', key + '-dust-size', 1)
-			.requireValue(key + '-particle', ['Redstone', 'Dust color transition'])
+			.requireValue(key + '-particle', ['Redstone', 'Dust', 'Dust color transition'])
 			.requireValue(key, [true])
 			.setTooltip('The size of the dust particles'),
 
