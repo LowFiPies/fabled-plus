@@ -1946,20 +1946,21 @@ const particleOptions = (): ComponentOption[] => {
 			.setTooltip('The type of particle to display'),
 
 		new DropdownSelect('Material', 'material', (() => [...getMaterials()]), 'Arrow')
-			.requireValue('particle', ['Item crack'])
+			.requireValue('particle', ['Item crack', 'Item'])
 			.setTooltip('The material to use for the particles'),
 		new DropdownSelect('Material', 'material', (() => [...getBlocks()]), 'Dirt')
 			.requireValue('particle', [
 				'Block crack',
 				'Block dust',
+				'Block',
 				'Falling dust',
 				'Block marker'])
 			.setTooltip('The block to use for the particles'),
 		new IntSelect('Durability', 'durability', 0)
-			.requireValue('particle', ['Item crack'])
+			.requireValue('particle', ['Item crack', 'Item'])
 			.setTooltip('The durability to be reduced from the item used to make the particles'),
 		new IntSelect('CustomModelData', 'type', 0)
-			.requireValue('particle', ['Item crack'])
+			.requireValue('particle', ['Item crack', 'item'])
 			.setTooltip('The CustomModelData of the item used to make the particles'),
 		new ColorSelect('Dust Color', 'dust-color', '#FF0000')
 			.requireValue('particle', ['Redstone', 'Dust', 'Dust color transition'])
@@ -2116,16 +2117,16 @@ const effectOptions = (optional: boolean): ComponentOption[] => {
 		opt(new DropdownSelect('Particle', '-particle-type', getParticles, getParticles()[0])
 			.setTooltip('The type of particle to use.')),
 		opt(new DropdownSelect('Material', '-particle-material', getMaterials, 'Dirt')
-			.requireValue('-particle-type', ['Item crack'])
+			.requireValue('-particle-type', ['Item crack', 'Item'])
 			.setTooltip('The material to use for the particle.')),
 		opt(new DropdownSelect('Material', '-particle-material', getBlocks, 'Dirt')
-			.requireValue('-particle-type', ['Block crack', 'Block dust', 'Falling dust', 'Block marker'])
+			.requireValue('-particle-type', ['Block crack', 'Block dust', 'Block', 'Falling dust', 'Block marker'])
 			.setTooltip('The block to use for the particle.')),
 		opt(new IntSelect('Durability', '-particle-durability')
-			.requireValue('particle', ['Item crack'])
+			.requireValue('particle', ['Item crack', 'Item'])
 			.setTooltip('The durability to be reduced from the item used to make the particles')),
 		opt(new IntSelect('CustomModelData', '-particle-data')
-			.requireValue('-particle-type', ['Item crack'])
+			.requireValue('-particle-type', ['Item crack', 'Item'])
 			.setTooltip('The data value for the material used by the particle. For 1.14+ determines the CustomModelData of the item.')),
 		new ColorSelect('Dust Color', '-particle-dust-color', '#FF0000').requireValue('-particle-type', ['Redstone', 'Dust', 'Dust color transition'])
 			.setTooltip('The color of the dust particles in hex RGB'),
@@ -2984,23 +2985,24 @@ class ItemProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('per-target', [true]),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('per-target-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('per-target', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'per-target-durability', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'per-target-type', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
@@ -3070,23 +3072,24 @@ class ItemProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('path', [true]),
 				new DropdownSelect('Material', 'path-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'path-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('path-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('path', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'path-durability', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'path-type', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
@@ -3505,23 +3508,24 @@ class ParticleProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('per-target', [true]),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('per-target-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('per-target', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'per-target-durability', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'per-target-type', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
@@ -3591,23 +3595,24 @@ class ParticleProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('path', [true]),
 				new DropdownSelect('Material', 'path-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'path-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('path-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('path', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'path-durability', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'path-type', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
@@ -3756,20 +3761,21 @@ class PotionProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle the cloud is composed of')
 					.requireValue('linger', [true]),
 				new DropdownSelect('Material', 'cloud-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('cloud-particle', ['Item crack'])
+					.requireValue('cloud-particle', ['Item crack', 'Item'])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'cloud-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('cloud-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'cloud-durability', 0)
-					.requireValue('cloud-particle', ['Item crack'])
+					.requireValue('cloud-particle', ['Item crack', 'Item'])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'cloud-type', 0)
-					.requireValue('cloud-particle', ['Item crack'])
+					.requireValue('cloud-particle', ['Item crack', 'Item'])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'cloud-dust-color', '#FF0000')
 					.requireValue('cloud-particle', ['Redstone', 'Dust', 'Dust color transition'])
@@ -3797,23 +3803,24 @@ class PotionProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('per-target', [true]),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('per-target-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('per-target', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'per-target-durability', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'per-target-type', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
@@ -3883,23 +3890,24 @@ class PotionProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('path', [true]),
 				new DropdownSelect('Material', 'path-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'path-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('path-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('path', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'path-durability', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'path-type', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
@@ -4000,23 +4008,24 @@ class ProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('per-target', [true]),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'per-target-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('per-target-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('per-target', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'per-target-durability', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'per-target-type', 0)
-					.requireValue('per-target-particle', ['Item crack'])
+					.requireValue('per-target-particle', ['Item crack', 'Item'])
 					.requireValue('per-target', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'per-target-dust-color', '#FF0000')
@@ -4086,23 +4095,24 @@ class ProjectileMechanic extends ProMechanic {
 					.setTooltip('The type of particle to display')
 					.requireValue('path', [true]),
 				new DropdownSelect('Material', 'path-material', (() => [...getMaterials()]), 'Arrow')
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The material to use for the particles'),
 				new DropdownSelect('Material', 'path-material', (() => [...getBlocks()]), 'Dirt')
 					.requireValue('path-particle', [
 						'Block crack',
 						'Block dust',
+						'Block',
 						'Falling dust',
 						'Block marker'])
 					.requireValue('path', [true])
 					.setTooltip('The block to use for the particles'),
 				new IntSelect('Durability', 'path-durability', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The durability to be reduced from the item used to make the particles'),
 				new IntSelect('CustomModelData', 'path-type', 0)
-					.requireValue('path-particle', ['Item crack'])
+					.requireValue('path-particle', ['Item crack', 'Item'])
 					.requireValue('path', [true])
 					.setTooltip('The CustomModelData of the item used to make the particles'),
 				new ColorSelect('Dust Color', 'path-dust-color', '#FF0000')
@@ -5048,23 +5058,24 @@ const particlePreviewOptions = (key: string): ComponentOption[] => {
 			.setTooltip('The type of particle to display')
 			.requireValue(key, [true]),
 		new DropdownSelect('Material', key + '-material', (() => [...getMaterials()]), 'Arrow')
-			.requireValue(key + '-particle', ['Item crack'])
+			.requireValue(key + '-particle', ['Item crack', 'Item'])
 			.requireValue(key, [true])
 			.setTooltip('The material to use for the particles'),
 		new DropdownSelect('Material', key + '-material', (() => [...getBlocks()]), 'Dirt')
 			.requireValue(key + '-particle', [
 				'Block crack',
 				'Block dust',
+				'Block',
 				'Falling dust',
 				'Block marker'])
 			.requireValue(key, [true])
 			.setTooltip('The block to use for the particles'),
 		new IntSelect('Durability', key + '-durability', 0)
-			.requireValue(key + '-particle', ['Item crack'])
+			.requireValue(key + '-particle', ['Item crack', 'Item'])
 			.requireValue(key, [true])
 			.setTooltip('The durability to be reduced from the item used to make the particles'),
 		new IntSelect('CustomModelData', key + '-type', 0)
-			.requireValue(key + '-particle', ['Item crack'])
+			.requireValue(key + '-particle', ['Item crack', 'Item'])
 			.requireValue(key, [true])
 			.setTooltip('The CustomModelData of the item used to make the particles'),
 		new ColorSelect('Dust Color', key + '-dust-color', '#FF0000')
